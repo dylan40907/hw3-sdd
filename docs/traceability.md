@@ -7,7 +7,6 @@ Interview evidence uses these sources:
 
 - **D-Alan, D-Jordan, D-Okoye**: Dylan's transcripts in `hw2/dylan/transcripts/`, cited by line number.
 - **A-Alan, A-Jordan, A-Okoye**: Ashley's transcripts in `hw2/ashley/transcripts/`, cited by timestamp.
-  Note: in that folder, `transcript_ Alan.csv` holds the Okoye interview and `transcript_ Nkechi.csv` holds the Alan interview.
 
 ## Matrix
 
