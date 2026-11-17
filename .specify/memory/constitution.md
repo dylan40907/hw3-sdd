@@ -1,50 +1,71 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Fair Exam Prototype Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Spec Scope Only
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+This is a small class prototype. Only what the feature spec asks for is built.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+- Every screen, component, function and data field MUST exist to satisfy a functional
+  requirement (FR) in the active spec.
+- Features, settings, abstractions or polish not required by an FR MUST NOT be added. If something
+  seems missing, the spec is updated first, then the code.
+- Goals listed as out of sprint scope in `docs/goal-model.md` MUST NOT be implemented.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+Rationale: the prototype exists to test the selected requirements, and extra scope adds work
+without adding evidence.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### II. Testable Requirements
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+- Every FR MUST be stated so that a pass or fail result can be observed (concrete inputs, actions
+  and expected outcomes, with numbers where the spec gives them).
+- Every FR MUST have at least one automated test, and each test MUST name the FR ID(s) it covers.
+- An FR with no passing automated test is not done.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+Rationale: automated tests are the evidence that each requirement was met.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+### III. Traceability
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+Every artifact links back one level, so any task traces to a stakeholder goal:
+
+- Every user story MUST cite at least one goal ID (`G-n`) from `docs/goal-model.md`.
+- Every FR MUST cite the user story it belongs to and its REQ ID (`REQ-nn`) from
+  `docs/initial-spec.md`.
+- Every task MUST cite the FR ID(s) it implements or tests.
+- A citation MUST point to an ID that exists in the cited document.
+
+Rationale: the course requires a goal to requirement to task to test chain, and broken links hide
+scope creep and untested requirements.
+
+### IV. Mock Data Only
+
+- All data MUST come from mock data bundled with the frontend.
+- There MUST be no backend, server API, database, authentication service or external network call.
+- State that must survive a page reload MAY use browser storage.
+
+Rationale: the prototype tests requirements and user flows, not infrastructure.
+
+## Prototype Constraints
+
+- Source lives in `frontend/`; Spec Kit artifacts live in `specs/`.
+- The prototype runs entirely in the browser from a static build or local dev server.
+- Roles are switched in the UI; there is no login.
+
+## Quality Gates
+
+- `/speckit-plan` MUST pass a Constitution Check against Principles I to IV before design starts.
+- `/speckit-tasks` output MUST include a test task for every FR, and every task MUST cite an FR.
+- Before a version is tagged, all automated tests MUST pass and `docs/traceability.md` MUST list
+  every goal, REQ, user story, FR and test link for the version.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- This constitution overrides other project practices where they conflict.
+- Amendments are made with `/speckit-constitution`, agreed by both team members, and committed
+  with the reason in the commit message.
+- Versioning follows semantic versioning: MAJOR for removing or redefining a principle, MINOR for
+  adding a principle or section or materially expanding guidance, PATCH for wording fixes.
+- Every spec, plan and task list is checked against this constitution during `/speckit-analyze`
+  and before a version is tagged.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-11-16 | **Last Amended**: 2026-11-16

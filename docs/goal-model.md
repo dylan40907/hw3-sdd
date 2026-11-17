@@ -1,5 +1,51 @@
 # Goal Model
 
+Version 1 (sprint scope).
+
+## 0. Model, Scope and Justification
+
+### Goal model files
+
+| File | Contents |
+|---|---|
+| [goal_model_v1.py](goal_model_v1.py) | Merged team goal model, updated for the sprint. Sprint goals are green, goals not stated in any transcript are yellow, and conflicts are lightning-bolt links. |
+| [goal_model_v1_mermaid.txt](goal_model_v1_mermaid.txt) | Link to the rendered diagram. |
+| [../hw2/dylan/](../hw2/dylan/), [../hw2/ashley/](../hw2/ashley/) | Each member's original HW2 models and interview transcripts. |
+
+Goal IDs G-1 to G-110 come from Dylan's HW2 combined model, which had the most detail. Ashley's
+HW2 model was reconciled into it: goals she heard directly that Dylan had only inferred are no
+longer marked as inferred (G-53), and goals only her interviews produced were added as G-111 to
+G-118. Seven goals were reworded to match the sprint decisions (G-3, G-7, G-20, G-25, G-51, G-65,
+G-66).
+
+### Why these goals
+
+| Criterion | Goals | Reason |
+|---|---|---|
+| Core | G-20, G-111, G-112, G-65, G-66, G-25, G-113, G-114 (REQ-12 to REQ-19) | Handling a flag from signal to referral is the main concern of all three stakeholders, and it is where our biggest conflict sits (C4, found in both members' models). |
+| User-facing | G-30, G-51, G-39, G-53 (REQ-01, REQ-02, REQ-04, REQ-10) | This is what the student sees during an exam. Jordan's stress came from not knowing if accommodations were applied and from losing time. |
+| Uncertain | G-115, G-7, G-116, G-117, G-10, G-3, G-118 (REQ-03, REQ-05 to REQ-09, REQ-11) | We do not know if detection without a camera gives the instructor useful flags, or how pausing the timer interacts with detection. A prototype is the cheapest way to find out. |
+
+### Goals left out of the sprint
+
+| Goals | Why they were less important for this sprint |
+|---|---|
+| Integrity office process after a referral: screening, due process, decision, appeal (G-73, G-83, G-90, G-91) | A separate case system. The sprint stops at the referral document, which is the handoff. Conflicts C5 and C6 stay open. |
+| Recording retention and the full evidence record (G-101, G-92) | Needs a policy decision from the integrity office (C7). The sprint keeps no recordings. |
+| Webcam monitoring and face identity checks (G-108, G-109) | Rejected for the sprint in C2 because of student stress. |
+| Auto-grading and TA grading work (G-12 to G-16) | Well understood, low uncertainty, and not involved in any conflict. |
+| Resume or retake after a crash, device checks (G-40, G-41, G-57) | The sprint covers autosave only (G-39). |
+| Breaks, reduced-distraction mode, medical privacy (G-31, G-48, G-69 to G-71) | Extra time is the one accommodation needed to show the flag context. |
+| Consistent review across TAs (G-23, G-24) | The prototype has one instructor role. |
+
+### Conflicts kept in the model but outside the sprint
+
+| ID | Conflict | Status |
+|---|---|---|
+| C5 | Student explains before a formal case (G-64) ↔ Office opens a case before notifying the student (G-81) | Unresolved. Needs the integrity office to confirm. |
+| C6 | Instructor decides which cases to pursue (G-25) ↔ Only an authorized reviewer decides (G-90) | Unresolved. Ashley's interviews suggest two stages and not a conflict. Needs stakeholder clarification. |
+| C7 | Delete recordings after retention (G-101) ↔ Keep the full record for appeals (G-92) | Unresolved. Needs a policy decision. |
+
 ## 1. Selected Stakeholder Goals and Requirements
 
 | Goal | Goal statement | Stakeholder | Requirement | Requirement statement |
