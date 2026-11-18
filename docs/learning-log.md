@@ -2,7 +2,13 @@
 
 ## 1. Sprint Planning and Requirements Selection
 
-Here's some info about v1 you might need to write this Ashley you can delete it: the handout says the goals we left out and why have to be in this section. The list is in section 0 of docs/goal-model.md so just explain it in your own words. The IDs come from my HW2 model since it had a little more detail and G-111 to G-118 are new. G-112, G-115 and G-116 are not from any interview so they're yellow. C5 to C7 are left unresolved on purpose because the handout says not to remove conflicts. In clarify I also decided some things you might want to mention like 3 or more students make a group and each student in a group gets their own flag.
+Our initial intention was to select goals that together cover a complete process of how an actual exam should run on our application. We therefore prioritized the goals that determine the core workflow, since they are essentially the backbone of the whole system. We left several goals out of this sprint because they add detail to the workflow rather than define it, so they can be built on top of it later. For example, the auto-grading and TA grading goals, G-12 to G-16, were excluded because our main concern is handling academic dishonesty, and grading does not affect how a misconduct case moves through the system.
+
+Dependent requirements were the easiest to identify. Our workflow has several blocking points where the process cannot move forward unless an earlier requirement is in place. For example, an instructor can only refer a case to the academic integrity officer after receiving an initial explanation from the student, so the requirement for collecting the student’s explanation had to be completed before the referral requirement. For overlapping requirements, we merged them into a single goal, because they essentially lead to the same outcome. 
+
+For conflicting requirements, we chose options that balance the competing goals and can be implemented simply in the demo. For example, camera-based surveillance conflicted with Jordan’s requirement, since Jordan was uncomfortable with being monitored. Instead of camera analysis, we flagged lightweight and measurable behaviors such as switching tabs or copying and pasting, which still supports misconduct detection while respecting Jordan’s concern. Conflicts C5 to C7 are intentionally left unresolved in the model, following the handout’s instruction not to remove conflicts.
+
+The goal model made these relationships easy to recognize because related requirements were already grouped together. This allowed us to quickly pick the most important requirement from each group while still covering the overall workflow.
 
 ## 2. Prototype Evaluation
 
