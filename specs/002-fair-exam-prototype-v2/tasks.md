@@ -219,10 +219,10 @@ documents with no inputs
 
 - [X] T038 FR-001 to FR-023: Run `cd frontend && node --test` and confirm every test passes; confirm each of FR-001 to FR-023 is named in at least one test (`grep -rhoE "FR-0[0-9]{2}" frontend/tests | sort -u` lists all 23)
 - [X] T039 FR-001 to FR-023: Update `docs/traceability.md` with a V2 section listing every goal, REQ, user story, FR and test file for V2, using the FR to test map in [quickstart.md](quickstart.md); leave the V1 section unchanged
-- [ ] T040 FR-001 to FR-023: Run the 13 manual scenarios in [quickstart.md](quickstart.md) against `python -m http.server 8000` from `frontend/`, and run scenarios 4 to 7 against V1 (`git worktree add` the `v1` tag in the scratchpad directory, not in the repository) to confirm the differences listed there; report any scenario that fails
-- [ ] T041 Deployment: After the user confirms, commit, tag `v2`, and publish `frontend/` at that tag into `v2/` on the `gh-pages` branch without touching `v1/`, `index.html` or `.nojekyll`; push. This pushes to the shared remote, so ask first (plan.md "Deployment", research.md R7)
-- [ ] T042 Deployment: Open `/v1/` and `/v2/` of the published site in one browser; check both load, an action in V2 does not appear in V1 and the reverse, and V1 still shows one flag per signal while V2 shows one per student
-- [ ] T043 Deployment: In `README.md` fill the "GitHub Version 2" and "Prototype V2" rows with the v2 tag link and `https://dylan40907.github.io/hw3-sdd/v2/`, and write "What changed from V1 to V2" from the change list in [research.md](research.md); do not edit the "Roles and Responsibilities" table
+- [X] T040 FR-001 to FR-023: Run the 13 manual scenarios in [quickstart.md](quickstart.md) against `python -m http.server 8000` from `frontend/`, and run scenarios 4 to 7 against V1 (`git worktree add` the `v1` tag in the scratchpad directory, not in the repository) to confirm the differences listed there; report any scenario that fails
+- [X] T041 Deployment: After the user confirms, commit, tag `v2`, and publish `frontend/` at that tag into `v2/` on the `gh-pages` branch without touching `v1/`, `index.html` or `.nojekyll`; push. This pushes to the shared remote, so ask first (plan.md "Deployment", research.md R7)
+- [X] T042 Deployment: Open `/v1/` and `/v2/` of the published site in one browser; check both load, an action in V2 does not appear in V1 and the reverse, and V1 still shows one flag per signal while V2 shows one per student
+- [X] T043 Deployment: In `README.md` fill the "GitHub Version 2" and "Prototype V2" rows with the v2 tag link and `https://dylan40907.github.io/hw3-sdd/v2/`, and write "What changed from V1 to V2" from the change list in [research.md](research.md); do not edit the "Roles and Responsibilities" table
 
 ---
 
