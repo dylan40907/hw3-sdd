@@ -1,6 +1,6 @@
 # Goal Model
 
-Version 1 (sprint scope).
+Version 2. Changes from Version 1 are listed in section 5.
 
 ## 0. Model, Scope and Justification
 
@@ -8,8 +8,8 @@ Version 1 (sprint scope).
 
 | File | Contents |
 |---|---|
-| [goal_model_v1.py](goal_model_v1.py) | Merged team goal model, updated for the sprint. Sprint goals are green, goals not stated in any transcript are yellow, and conflicts are lightning-bolt links. |
-| [goal_model_v1_mermaid.txt](goal_model_v1_mermaid.txt) | Link to the rendered diagram. |
+| [goal_model_v2.py](goal_model_v2.py) | Merged team goal model, updated for the sprint. Sprint goals are green, goals not stated in any transcript are yellow, and conflicts are lightning-bolt links. |
+| [goal_model_v2_mermaid.txt](goal_model_v2_mermaid.txt) | Link to the rendered diagram. |
 | [../hw2/dylan/](../hw2/dylan/), [../hw2/ashley/](../hw2/ashley/) | Each member's original HW2 models and interview transcripts. |
 
 Goal IDs G-1 to G-110 come from Dylan's HW2 combined model, which had the most detail. Ashley's
@@ -57,11 +57,11 @@ G-66).
 | G-115 | Achieve[FullscreenModeEntered Before Start] | Derived from C1 | REQ-05 | The exam asks the student to enter fullscreen. |
 | G-7 | Achieve[PageLeaveOrFullscreenExitDetected] | Alan, Nkechi | REQ-06 | Leaving the exam page or exiting fullscreen is recorded. |
 | G-116 | Achieve[PasteIntoAnswerFieldDetected] | Derived from C2 | REQ-07 | Pasting into an answer field is recorded. |
-| G-117 | Achieve[ResponseTimeAnomalyDetected] | Nkechi | REQ-08 | An answer submitted within 30 seconds of returning to the exam page is recorded. |
-| G-10 | Achieve[SimilarAnswerClustersFlagged] | Alan | REQ-09 | Students with the same incorrect answer to the same question are grouped. |
-| G-53 | Achieve[TimerPaused While SupportRequestOpen] | Jordan | REQ-10 | The student can request help in the exam page; the timer pauses and nothing is detected until the request is closed, but the request itself is recorded. |
-| G-118 | Maintain[EachPauseRecordedWithReasonAndDuration] | Alan, Nkechi | REQ-11 | Each pause is recorded with its reason and length. |
-| G-20 | Achieve[FlagRecordsWhatWhenWhyAndContext] | Alan, Nkechi | REQ-12 | Every recorded signal becomes a flag showing what happened, when, why, and the student's accommodations and pauses. |
+| G-117 | Achieve[ResponseTimeAnomalyDetected Unless ReturnAfterOutageOrHelp] | Nkechi | REQ-08 | An answer submitted within 30 seconds of returning to the exam page is recorded, unless the student is returning from a connection loss or a help request. |
+| G-10 | Achieve[SimilarAnswerClustersFlagged] | Alan | REQ-09 | Students with the same incorrect answer to the same question are grouped, and the group is added as a signal to each of their flags. |
+| G-53 | Achieve[TimerPausedAndQuestionsHidden While SupportRequestOpen] | Jordan | REQ-10 | The student can request help in the exam page and must pick or type a reason; the timer pauses, the questions are hidden and nothing is detected until the request is closed, but the request itself is recorded. |
+| G-118 | Maintain[EachPauseRecordedWithStudentReasonAndDuration] | Alan, Nkechi | REQ-11 | Each pause is recorded with the reason the student gave and its length. |
+| G-20 | Achieve[StudentSignalsCollectedInOneFlagWithWhatWhenWhyAndContext] | Alan, Nkechi | REQ-12 | Each student has at most one flag per exam. It collects all of that student's signals, each showing what happened, when and why, together with the student's accommodations and pauses. |
 | G-111 | Achieve[FlagScreenedByInstructor Before StudentContacted] | Alan | REQ-13 | The instructor reviews each flag before the student sees it. |
 | G-112 | Achieve[FlagDismissedWithoutReferral If ConcernExplained] | Derived from G-25 | REQ-14 | The instructor can dismiss a flag before or after the student explains; a dismissed flag cannot be referred. |
 | G-65 | Achieve[FlagDetailsShownToStudent When ExplanationRequested] | Jordan | REQ-15 | The instructor can ask the student to explain a flag; the student sees a flag only after this request. |
@@ -81,14 +81,15 @@ G-66).
 | REQ-05 | The student confirms the start page | The exam starts | Fullscreen is requested |
 | REQ-06 | The exam is running | The student switches to another tab | A signal is recorded |
 | REQ-07 | The exam is running | The student pastes into an answer field | A signal is recorded |
-| REQ-08 | The student has just returned to the exam page | The student submits an answer within 30 seconds | A signal is recorded |
-| REQ-09 | Three students give the same incorrect answer to one question | The exam ends | They are grouped in one flag |
-| REQ-10 | 20 minutes remain | The student opens a 2-minute help request, switches tabs during it, then closes it | 20 minutes still remain, the help request is recorded, and no page-leave signal is recorded |
-| REQ-11 | A help request was closed | The instructor opens the student's exam record | The pause is shown with its reason and length |
-| REQ-12 | A signal was recorded | The instructor opens the flag | It shows what happened, when, why, and the context |
+| REQ-08 | The student has just returned to the exam page after switching tabs | The student submits an answer within 30 seconds | A signal is recorded |
+| REQ-08 | The student has just returned after a connection loss or a help request | The student submits an answer within 30 seconds | No signal is recorded |
+| REQ-09 | Three students give the same incorrect answer to one question | The exam ends | Each of the three flags shows the group as a signal |
+| REQ-10 | 20 minutes remain | The student opens a 2-minute help request with a reason, switches tabs during it, then closes it | The questions are hidden while it is open, 20 minutes still remain, the help request is recorded, and no page-leave signal is recorded |
+| REQ-11 | A help request was closed | The instructor opens the student's exam record | The pause is shown with the student's reason and its length |
+| REQ-12 | A student left the page and then answered within 30 seconds | The instructor opens the student's flags | There is one flag with both signals, each showing what, when and why, plus the context |
 | REQ-13 | A new flag exists | The instructor has not reviewed it | The student cannot see it |
 | REQ-14 | The instructor dismisses a flag | The instructor tries to refer it | Referral is not possible |
-| REQ-15 | The instructor kept two flags and asked for an explanation on one | The student checks their flags | Only that one is shown, with its details and deadline |
+| REQ-15 | The instructor has kept a flag | The student checks before and after the instructor asks for an explanation | The flag appears only after the request, with its signals and deadline |
 | REQ-16 | The student was asked to explain a flag | The student submits an explanation before the deadline | The instructor sees the explanation |
 | REQ-17 | The student was asked to explain, and has explained or the deadline has passed | The instructor refers the flag | The flag is referred to the integrity office |
 | REQ-18 | A flag is referred | The document is generated | It contains the flag, its evidence, the explanation and the reason |
@@ -102,6 +103,8 @@ G-66).
 - Users switch roles with a selector; there is no login.
 - The student has 3 days to explain after the instructor asks.
 - The response-time threshold is 30 seconds.
+- There is no maximum length for a help request. Alan needs to confirm one.
+- Any shared incorrect answer forms a group. Alan needs to clarify what makes a shared answer suspicious.
 
 ### Dependencies
 
@@ -111,13 +114,14 @@ G-66).
 | D2 | REQ-09 depends on REQ-03: because each student has a different version, the same incorrect answer from several students stands out. |
 | D3 | REQ-16 depends on REQ-15, and REQ-17 on REQ-16: the student explains only after being asked, and a flag is referred only after the explanation or the deadline. |
 | D4 | REQ-06 to REQ-08 depend on REQ-10: detection stops during a help request. |
+| D5 | REQ-08 depends on REQ-06: the fast-answer signal needs to know why the student left the page. |
 
 ### Edge Cases
 
 | Case | Expected behavior |
 |---|---|
 | A help request is still open when the end time arrives | The end time moves later by the length of the pause. |
-| A connection drop makes the student leave the exam page | The flag shows the technical event. |
+| A connection drop makes the student leave the exam page | The page leave is marked as a connection loss, and a fast answer after returning is not recorded. |
 | The student reloads the page during the exam | The answers are restored, the timer keeps running, and a page-leave signal is recorded. |
 | The deadline passes without an explanation | The instructor can still refer the flag, and the document states that no explanation was given. |
 
@@ -130,7 +134,7 @@ G-66).
 | O1 | Confirming accommodations, a one-page summary, and showing the rules before the start | Combined into one start page (REQ-02). |
 | O2 | Separating accommodations and technical problems from unusual behavior (Alan), and not counting normal behavior against the student (Jordan) | Combined: shown as context on each flag (REQ-12). |
 | O3 | Instructor screening (Alan) and human review (Nkechi, Jordan) | Combined into one review step (REQ-13). |
-| O4 | Four signal types | Recorded separately, shown the same way (REQ-12). |
+| O4 | Four signal types | Recorded separately and collected in one flag per student per exam (REQ-12). |
 
 ### Conflicts
 
@@ -138,5 +142,15 @@ G-66).
 |---|---|---|
 | C1 | Block outside resources (G-5) ↔ Don't over-restrict the exam (G-9) | **Compromise**: fullscreen only, without blocking the computer (REQ-05). |
 | C2 | Monitor the exam (G-6) ↔ Reduce student stress (G-43) | **Compromise**: no camera; detect page leaves, pastes and timing, and tell students beforehand (REQ-02, REQ-06 to REQ-08). |
-| C3 | Pause the timer for help (G-53) ↔ Prevent outside help (G-2) | **Prioritize G-53**: the student keeps their time, and every pause is recorded for review (REQ-10, REQ-11). |
+| C3 | Pause the timer for help (G-53) ↔ Prevent outside help (G-2) | **Prioritize G-53**: the student keeps their time, the questions are hidden while help is open, and every pause is recorded with the student's reason (REQ-10, REQ-11). |
 | C4 | Student explains first (G-64) ↔ Instructor reviews first (G-111) | **Prioritize G-111**: the student sees a flag only when the instructor asks for an explanation, and must be asked before any referral (REQ-13 to REQ-17). |
+
+## 5. Changes from Version 1
+
+| Observation | What changed | Goals and requirements |
+|---|---|---|
+| V1-1 | One flag per student per exam instead of one flag per signal, to reduce review work and keep one record per case. | G-20, REQ-12, REQ-09, O4 |
+| V1-2 | The student gives a reason when asking for help. A maximum pause length is kept as an open question for Alan. | G-53, G-118, REQ-10, REQ-11 |
+| V1-3 | No fast-answer signal after a connection loss or a help request, so an outage is not treated as suspicious. | G-117, G-21, REQ-08 |
+| V1-4 | Not changed. Kept as an open question for Alan. | G-10, REQ-09 |
+| V1-5 | Questions are hidden while help is open. V1 did this without it being specified; it is now part of REQ-10. | G-53, REQ-10, C3 |

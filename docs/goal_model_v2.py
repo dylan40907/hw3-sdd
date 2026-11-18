@@ -1,5 +1,5 @@
 """
-17-626 HW3 - Team goal model, Version 1 (sprint scope).
+17-626 HW3 - Team goal model, Version 2.
 
 Base: Dylan's HW2 combined model (hw2/dylan/goal_model_combined.py), reconciled with Ashley's
 HW2 model (hw2/ashley/). Goal IDs G-1 .. G-110 keep their HW2 meaning.
@@ -15,7 +15,14 @@ Changes for the sprint (see docs/goal-model.md for the decisions)
   outside the sprint and stay unresolved.
 - G-53 was inferred in HW2 (yellow) but Ashley's Jordan asked for it directly, so it is no
   longer yellow.
-- Run: pip install git+https://github.com/cmu-relab/goalmodeling, then python goal_model_v1.py
+- Version 2 changes, from the V1 evaluation in docs/traceability.md:
+  V1-1: G-20 reworded. One flag per student per exam collects all of that student's signals.
+  V1-2: G-118 reworded. The pause is recorded with the reason the student gives.
+        A maximum pause length is an open question for Alan.
+  V1-3: G-117 reworded. No fast-answer signal after a connection loss or a help request (G-21).
+  V1-4: Not changed. What makes a shared wrong answer suspicious (G-10) is an open question for Alan.
+  V1-5: G-53 reworded. Questions are hidden while a help request is open (decision C3).
+- Run: pip install git+https://github.com/cmu-relab/goalmodeling, then python goal_model_v2.py
 - SOURCE tags: A/J/N = Dylan's transcripts (line number), aA/aJ/aN = Ashley's transcripts.
 """
 from goalmodeling.schema import *
@@ -121,10 +128,10 @@ g115 = goal(AchieveGoal, "G-115", "FullscreenModeEntered <b>Before</b> Start", l
             performs=agent("ExamPlatform"), missing=True)                   # derived from C1
 g116 = goal(AchieveGoal, "G-116", "PasteIntoAnswerFieldDetected", leaf=True,
             performs=agent("ProctoringMonitor"), missing=True)              # derived from C2
-g117 = goal(AchieveGoal, "G-117", "ResponseTimeAnomalyDetected", leaf=True,
-            performs=agent("ProctoringMonitor"))                            # aN
+g117 = goal(AchieveGoal, "G-117", "ResponseTimeAnomalyDetected <b>Unless</b> ReturnAfterOutageOrHelp", leaf=True,
+            performs=agent("ProctoringMonitor"))                            # aN; V2 exception from V1-3 (G-21)
 g10 = goal(AchieveGoal, "G-10", "SimilarAnswerClustersFlagged", leaf=True,
-           performs=agent("ExamPlatform"))                                  # A10, A22
+           performs=agent("ExamPlatform"))                                  # A10, A22; V1-4 open for Alan
 g108 = goal(AchieveGoal, "G-108", "FaceIdentityMatchChecked", leaf=True,
             performs=agent("ProctoringMonitor"))                            # N27, N29
 g109 = goal(MaintainGoal, "G-109", "FaceMatchAccurateAcrossStudentGroups", leaf=True,
@@ -152,8 +159,8 @@ g24 = goal(AchieveGoal, "G-24", "SharedFlagReviewCriteriaApplied", leaf=True,
 
 # --- Flags (all three stakeholders) ---
 # MERGED G-74 (N29, N53, N66) into G-20 (A40)
-g20 = goal(AchieveGoal, "G-20", "FlagRecordsWhatWhenWhyAndContext", leaf=True,
-           performs=agent("ProctoringMonitor"))
+g20 = goal(AchieveGoal, "G-20", "StudentSignalsCollectedInOneFlagWithWhatWhenWhyAndContext", leaf=True,
+           performs=agent("ProctoringMonitor"))                             # V2 from V1-1
 g21 = goal(AvoidGoal, "G-21", "AccommodationOrOutageFlaggedAsSuspicious", leaf=True,
            performs=agent("ProctoringMonitor"))                             # A40, A96, N32
 g62 = goal(AvoidGoal, "G-62", "ThinkingBehaviorFlaggedAsMisconduct", leaf=True,
@@ -260,10 +267,10 @@ g50 = goal(AchieveGoal, "G-50", "QuietestAvailableSpaceArrangedByStudent", leaf=
 # --- Taking the exam (Jordan + Alan) ---
 g51 = goal(AchieveGoal, "G-51", "ExamConditionsConfirmedOnOnePage <b>Before</b> Start", leaf=True,
            performs=agent("ExamPlatform"))                                  # J32, J36
-g53 = goal(AchieveGoal, "G-53", "TimerPaused <b>While</b> SupportRequestOpen", leaf=True,
-           performs=agent("ExamPlatform"))                 # alternative 1; stated in aJ (Ashley's Jordan)
-g118 = goal(MaintainGoal, "G-118", "EachPauseRecordedWithReasonAndDuration", leaf=True,
-            performs=agent("ExamPlatform"))                                 # aA, aN (decision C3)
+g53 = goal(AchieveGoal, "G-53", "TimerPausedAndQuestionsHidden <b>While</b> SupportRequestOpen", leaf=True,
+           performs=agent("ExamPlatform"))                 # alternative 1; stated in aJ; questions hidden from V1-5
+g118 = goal(MaintainGoal, "G-118", "EachPauseRecordedWithStudentReasonAndDuration", leaf=True,
+            performs=agent("ExamPlatform"))                                 # aA, aN (decision C3); reason from V1-2
 g54 = goal(AchieveGoal, "G-54", "SupportTimeCreditedBack <b>If</b> SupportRequestClosed", leaf=True,
            performs=agent("ExamPlatform"), missing=True)                    # alternative 2
 g55 = goal(AchieveGoal, "G-55", "SaveReconnectAndSubmitInstructionsShown", leaf=True,
@@ -393,7 +400,8 @@ CONFLICTS = {
     # disclosed on the start page (G-51).
     "C2": (g6, g43),
     # C3 (Jordan vs Alan): pausing the timer during support opens an unmonitored window.
-    # Decision: prioritize G-53; every pause is recorded (G-118).
+    # Decision: prioritize G-53; questions are hidden while help is open, and every pause is
+    # recorded with the student's reason (G-118). Maximum pause length is open for Alan.
     "C3": (g53, g2),
     # C4 (Jordan vs Alan, found in both members' models): the student wants to explain a flag
     # first; the instructor wants to review it first.
