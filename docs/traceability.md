@@ -57,8 +57,7 @@ come from what the spec did or did not say.
 
 Code paths are under `frontend/`, tests are in `frontend/tests/` and run with `node --test`
 (104 tests, all passing). FR and user story (US) IDs are in `specs/002-fair-exam-prototype-v2/spec.md`;
-goals and requirements are in `docs/goal-model.md` (Version 2). The V1 matrix above is unchanged. Interview evidence is the same as in V1, plus the V1 finding that led to each change.
-FR numbers match V1 except autosave (now FR-004) and versions (now FR-003).
+goals and requirements are in `docs/goal-model.md` (Version 2).
 
 ## V2 Matrix
 
