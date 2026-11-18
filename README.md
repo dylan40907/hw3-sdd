@@ -31,7 +31,7 @@ Tests: `cd frontend` then `node --test`.
 | `frontend/` | Prototype source code and tests |
 | `specs/` | Spec Kit artifacts (spec, plan, tasks) |
 | `docs/goal-model.md` | Merged goal model, sprint scope and decisions |
-| `docs/goal_model_v1.py` | Goal model source (goalmodeling framework) |
+| `docs/goal_model_v2.py` | Goal model source, Version 2 (goalmodeling framework; V1 is at the v1 tag) |
 | `docs/initial-spec.md` | Initial specification given to Spec Kit |
 | `docs/traceability.md` | Requirements traceability matrix and V1 evaluation |
 | `docs/learning-log.md` | Requirements analysis and reflection |

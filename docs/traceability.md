@@ -55,33 +55,32 @@ come from what the spec did or did not say.
 # Version 2
 
 Code paths are under `frontend/`, tests are in `frontend/tests/` and run with `node --test`
-(102 tests, all passing). FR and user story (US) IDs are in `specs/002-fair-exam-prototype-v2/spec.md`;
-goals and requirements are in `docs/goal-model.md` (Version 2). The V1 matrix above is unchanged.
+(104 tests, all passing). FR and user story (US) IDs are in `specs/002-fair-exam-prototype-v2/spec.md`;
+goals and requirements are in `docs/goal-model.md` (Version 2). The V1 matrix above is unchanged. Interview evidence is the same as in V1, plus the V1 finding that led to each change.
 FR numbers match V1 except autosave (now FR-004) and versions (now FR-003).
 
 ## V2 Matrix
 
-| Requirement | FR | Story | Goal | Code / Implementation | Tests | Status |
-|---|---|---|---|---|---|---|
-| REQ-01 Extra time applied | FR-001 | US1 | G-30 | `js/rules/timer.js`, `js/rules/start-page.js` | `timer.test.js` | Unchanged from V1 |
-| REQ-02 One start page | FR-002 | US1 | G-51 | `js/rules/start-page.js`, `js/ui/student-view.js` | `start-page.test.js` | Unchanged from V1 |
-| REQ-03 Own version, recorded | FR-003 | US2 | G-3 | `js/rules/versions.js` | `versions.test.js` | Unchanged from V1 (renumbered) |
-| REQ-04 Answers autosaved | FR-004, FR-022 | US1 | G-39 | `js/rules/versions.js`, `js/rules/store.js` (key `fairExam.v2`) | `store.test.js`, `versions.test.js` | Unchanged from V1 (renumbered, new storage key) |
-| REQ-05 Fullscreen requested | FR-005 | US3 | G-115 | `js/ui/exam-events.js` | `exam-events.test.js` | Unchanged from V1 |
-| REQ-06 Page leave or fullscreen exit | FR-006 | US3 | G-7 | `js/rules/signals.js`, `js/ui/exam-events.js` | `signals.test.js`, `exam-events.test.js` | Unchanged from V1 |
-| REQ-07 Paste recorded | FR-007 | US3 | G-116 | `js/rules/signals.js`, `js/ui/exam-events.js` | `signals.test.js`, `exam-events.test.js` | Unchanged from V1 |
-| REQ-08 Fast answer, not after outage or help | FR-008, FR-021 | US3 | G-117 | `js/rules/signals.js` (`overlapsOffline`, `endLeave`, `recordReload`), `js/rules/timer.js` (`closePause`) | `signals.test.js` | Changed (V1-3); Submit-only rule clarified |
-| REQ-09 Same incorrect answer grouped | FR-009 | US3 | G-10 | `js/rules/grouping.js` (`MIN_GROUP_SIZE` 2) | `grouping.test.js`, `flags.test.js` | Changed to groups of 2 or more; V1-4 stays open (Alan) |
-| REQ-10 Help request with a reason | FR-010, FR-020 | US4 | G-53 | `js/rules/timer.js` (`openPause`, `questionsHidden`), `js/data/mock-data.js` (`helpReasons`), `js/ui/student-view.js` | `timer.test.js`, `signals.test.js` | Changed (V1-2, V1-5); maximum length stays open (Alan) |
-| REQ-11 Pause with reason and length | FR-011 | US4 | G-118 | `js/rules/timer.js` (`pauseLog`), `js/ui/instructor-view.js` | `timer.test.js` | Changed (V1-2) |
-| REQ-12 One flag per student | FR-012 | US5 | G-20 | `js/rules/flags.js`, `js/rules/signals.js` (`addSignal`), `js/ui/instructor-view.js` | `flags.test.js`, `referral.test.js` | Changed (V1-1); "New signals" mark clarified |
-| REQ-13 Review before student sees | FR-013 | US5 | G-111 | `js/rules/flags.js` | `flags.test.js` | Unchanged from V1 |
-| REQ-14 Dismiss, no referral | FR-014 | US5 | G-112 | `js/rules/flags.js` (`dismiss`) | `flags.test.js` | Unchanged from V1; dismissed flag visible to student clarified |
-| REQ-15 Student sees flag after request | FR-015 | US6 | G-65 | `js/rules/flags.js`, `js/ui/student-view.js` | `flags.test.js` | Unchanged from V1 (all signals shown) |
-| REQ-16 Student explains | FR-016 | US6 | G-66 | `js/rules/flags.js`, `js/ui/student-view.js` | `flags.test.js` | Unchanged from V1 |
-| REQ-17 Refer after explanation or deadline | FR-017, FR-023 | US7 | G-25 | `js/rules/referral.js`, `js/ui/instructor-view.js` | `referral.test.js` | Unchanged from V1 |
-| REQ-18 Referral document | FR-018, FR-023 | US7 | G-113 | `js/rules/referral.js` | `referral.test.js` | Changed (lists every signal) |
-| REQ-19 Office reads the document | FR-019 | US7 | G-114 | `js/rules/referral.js`, `js/ui/office-view.js` | `referral.test.js` | Unchanged from V1 (lists every signal) |
+| Requirement | Interview Evidence | FR | Story | Goal | Code / Implementation | Tests | Status |
+|---|---|---|---|---|---|---|---|
+| REQ-01 Extra time applied | D-Alan L78 (wrong deadline instead of extra time); D-Jordan L9 ("approved extra time ... applied automatically") | FR-001 | US1 | G-30 | `js/rules/timer.js`, `js/rules/start-page.js` | `timer.test.js` | Fully satisfied (unchanged from V1) |
+| REQ-02 One start page | D-Jordan L32, L36 ("one clear page would show my approved time, the exam rules"); A-Jordan 21:24:57 (accommodations and actual end time shown before starting) | FR-002 | US1 | G-51 | `js/rules/start-page.js`, `js/ui/student-view.js` | `start-page.test.js` | Fully satisfied (unchanged from V1) |
+| REQ-03 Own version, recorded | D-Alan L17, L22 ("generate and record each student's problem instance") | FR-003 | US2 | G-3 | `js/rules/versions.js` | `versions.test.js` | Fully satisfied (unchanged from V1, renumbered) |
+| REQ-04 Answers autosaved | D-Alan L94 ("preserve what they've completed") | FR-004, FR-022 | US1 | G-39 | `js/rules/versions.js`, `js/rules/store.js` (key `fairExam.v2`) | `store.test.js`, `versions.test.js` | Fully satisfied (unchanged from V1, renumbered, new storage key) |
+| REQ-05 Fullscreen requested | Derived from conflict C1 (D-Alan L14 vs L58). Not stated by a stakeholder | FR-005 | US3 | G-115 | `js/ui/exam-events.js` | `exam-events.test.js` | Fully satisfied (unchanged from V1) |
+| REQ-06 Page leave or fullscreen exit | D-Alan L14 ("monitor the session, flag unusual patterns"); D-Okoye L29 ("irregular focus-loss event"); A-Okoye 20:55:35 ("browser or application focus changes") | FR-006 | US3 | G-7 | `js/rules/signals.js`, `js/ui/exam-events.js` | `signals.test.js`, `exam-events.test.js` | Fully satisfied (unchanged from V1) |
+| REQ-07 Paste recorded | Derived from conflict C2 (D-Alan L10 copying from websites). Not stated by a stakeholder | FR-007 | US3 | G-116 | `js/rules/signals.js`, `js/ui/exam-events.js` | `signals.test.js`, `exam-events.test.js` | Fully satisfied (unchanged from V1) |
+| REQ-08 Fast answer, not after outage or help | D-Okoye L29 ("an unusual response-time distribution"). The 30 s threshold is our assumption; V1-3 (connection loss is not suspicious, D-Alan L40, G-21) | FR-008, FR-021 | US3 | G-117 | `js/rules/signals.js` (`overlapsOffline`, `endLeave`, `recordReload`), `js/rules/timer.js` (`closePause`) | `signals.test.js` | Fully satisfied (changed for V1-3) |
+| REQ-09 Same incorrect answer grouped | D-Alan L10 ("30 students had the same wrong answer to four decimal places"); A-Alan 03:05:15 ("identical unusual mistakes") | FR-009 | US3 | G-10 | `js/rules/grouping.js` (`MIN_GROUP_SIZE` 2) | `grouping.test.js`, `flags.test.js` | Partially satisfied (group size changed to 2 or more; V1-4 still open with Alan) |
+| REQ-10 Help request with a reason | D-Jordan L18 ("not knowing whether contacting support will cost me time"); A-Jordan 21:24:57, 21:25:21 ("clear confirmation that the exam timer has stopped"); V1-2 (A-Jordan 21:24:57 "report a technical problem or interruption") | FR-010, FR-020 | US4 | G-53 | `js/rules/timer.js` (`openPause`, `questionsHidden`), `js/data/mock-data.js` (`helpReasons`), `js/ui/student-view.js` | `timer.test.js`, `signals.test.js` | Partially satisfied (reason added and questions hidden for V1-2, V1-5; maximum pause length still open with Alan) |
+| REQ-11 Pause with reason and length | A-Alan 03:16:54 (audit trail with "any pauses or connection failures") | FR-011 | US4 | G-118 | `js/rules/timer.js` (`pauseLog`), `js/ui/instructor-view.js` | `timer.test.js` | Fully satisfied (changed for V1-2) |
+| REQ-12 One flag per student | D-Alan L40 ("what happened, when it happened, and why it was flagged"); D-Okoye L53; A-Okoye 20:50:17 (observation, timestamp, rule, provenance); V1-1 (one case record, D-Okoye L53) | FR-012 | US5 | G-20 | `js/rules/flags.js`, `js/rules/signals.js` (`addSignal`), `js/ui/instructor-view.js` | `flags.test.js`, `referral.test.js` | Fully satisfied (changed for V1-1) |
+| REQ-13 Review before student sees | A-Alan 03:05:15 ("check whether there's a reasonable explanation before contacting a student") | FR-013 | US5 | G-111 | `js/rules/flags.js` | `flags.test.js` | Fully satisfied (unchanged from V1) |
+| REQ-14 Dismiss, no referral | Derived from G-25 (A-Alan 03:17:59 "speak with the students if the concern remains"). Not stated directly | FR-014 | US5 | G-112 | `js/rules/flags.js` (`dismiss`) | `flags.test.js` | Fully satisfied (unchanged from V1, dismissed flag visible to student clarified) |
+| REQ-15 Student sees flag after request | D-Jordan L18, L99 ("I should be able to see what was flagged"); A-Jordan 21:26:22 | FR-015 | US6 | G-65 | `js/rules/flags.js`, `js/ui/student-view.js` | `flags.test.js` | Fully satisfied (unchanged from V1, all signals shown) |
+| REQ-16 Student explains | D-Jordan L18, L99; D-Okoye L11 ("opportunity to review the evidence and submit a response"); A-Okoye 18:03:43 | FR-016 | US6 | G-66 | `js/rules/flags.js`, `js/ui/student-view.js` | `flags.test.js` | Fully satisfied (unchanged from V1) |
+| REQ-17 Refer after explanation or deadline | D-Alan L36 ("refer the stronger cases"); A-Alan 03:17:59 ("If it looks serious, I refer it") | FR-017, FR-023 | US7 | G-25 | `js/rules/referral.js`, `js/ui/instructor-view.js` | `referral.test.js` | Fully satisfied (unchanged from V1) |
+| REQ-18 Referral document | A-Okoye 20:50:17 ("a useful report should establish the factual basis"); D-Okoye L37 (intake of the instructor's report) | FR-018, FR-023 | US7 | G-113 | `js/rules/referral.js` | `referral.test.js` | Fully satisfied (now lists every signal) |
+| REQ-19 Office reads the document | A-Okoye 20:58:34 ("clear record of who reviewed each item"); D-Okoye L37 | FR-019 | US7 | G-114 | `js/rules/referral.js`, `js/ui/office-view.js` | `referral.test.js` | Fully satisfied (unchanged from V1, lists every signal) |
 
-V2 not checked yet: the 13 manual scenarios in `specs/002-fair-exam-prototype-v2/quickstart.md` in a
-browser, and success criteria SC-002 and SC-006 (timing), which need a person.
+Checked in a browser on the V2 build from the gh-pages branch (Nov 17): as a student, left the page, came back and submitted within 30 seconds, pasted, opened help (refused without a reason, questions hidden once open), left the page during help, closed it and submitted again, then finished. The instructor saw one flag for that student with four signals (page leave, fast answer, paste, same incorrect answer) and no fast-answer or page-leave signal from the help period; the exam record showed the pause with its reason and length. Keep, ask, explain and refer worked in order (Refer stayed disabled until the student explained), and the integrity office document listed every signal, the explanation and the reason. The same steps in V1 gave three separate flags. Not checked: the offline scenario and success criteria SC-002 and SC-006 (timing), which need a person.
