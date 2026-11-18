@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fair Exam Prototype</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Fair Exam</h1>
+    <label>Role
+      <select id="role">
+        <option value="student">Student</option>
+        <option value="instructor">Instructor</option>
+        <option value="office">Integrity office</option>
+      </select>
+    </label>
+    <label id="student-picker">Student
+      <select id="student"></select>
+    </label>
+  </header>
+  <p id="error" class="error" role="alert" hidden></p>
+  <main>
+    <section id="student-view" hidden></section>
+    <section id="instructor-view" hidden></section>
+    <section id="office-view" hidden></section>
+  </main>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
