@@ -206,7 +206,7 @@ US5, US6).
 ## Phase 9: Polish & Cross-Cutting Concerns
 
 - [X] T052 FR-001 to FR-023: Run `node --test` in `frontend/` and check that each of FR-001 to FR-023 appears in at least one test name (for example `node --test 2>&1 | grep -o "FR-0[0-9][0-9]" | sort -u`)
-- [ ] T053 FR-001 to FR-023: Serve `frontend/` with `python -m http.server 8000` and run the 10 manual scenarios in `specs/001-fair-exam-prototype/quickstart.md`; time scenario 1 from opening the exam to the first question (SC-002, under 1 minute) and scenarios 7 to 9 from a new flag to the integrity office opening its document (SC-005, under 5 minutes), and record both times in `docs/learning-log.md`
+- [X] T053 FR-001 to FR-023: Serve `frontend/` with `python -m http.server 8000` and run the 10 manual scenarios in `specs/001-fair-exam-prototype/quickstart.md`; time scenario 1 from opening the exam to the first question (SC-002, under 1 minute) and scenarios 7 to 9 from a new flag to the integrity office opening its document (SC-005, under 5 minutes), and record both times in `docs/learning-log.md`
 - [X] T054 [P] FR-001 to FR-023: Update `docs/traceability.md` with one row per FR: goal ID, REQ ID, user story, FR ID and test file
 
 ---
