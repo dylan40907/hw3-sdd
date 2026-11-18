@@ -14,18 +14,28 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-// flag carries the flag view (what, when, until, why, context) next to the flag fields.
-export function buildReferralDocument(flag, signal, reason, now) {
+// flag carries the flag view (signals, context) next to the flag fields.
+export function buildReferralDocument(flag, reason, now) {
   return deepFreeze(clone({
     id: `ref-${flag.id}`,
     flagId: flag.id,
     studentId: flag.studentId,
     createdAt: now,
-    flag: { what: flag.what, when: flag.when, until: flag.until ?? null, why: flag.why, context: flag.context },
+    flag: {
+      signals: flag.signals.map((i) => ({
+        what: i.what, when: i.when, until: i.until ?? null, why: i.why, technicalEvent: i.technicalEvent ?? null,
+      })),
+      context: flag.context,
+    },
     evidence: {
-      signal: { type: signal.type, at: signal.at, until: signal.until, details: signal.details },
-      technicalEvent: flag.context.technicalEvent ?? null,
-      group: flag.context.group ?? null,
+      signals: flag.signals.map((i) => ({
+        type: i.signal.type,
+        at: i.signal.at,
+        until: i.signal.until,
+        details: i.signal.details,
+        technicalEvent: i.technicalEvent ?? null,
+      })),
+      groups: flag.context.groups,
     },
     explanation: flag.explanation?.text ?? NO_EXPLANATION,
     reason,
@@ -41,7 +51,7 @@ export function refer(state, flagId, reason, now) {
     return { ok: false, error: 'This flag can be referred only after the student explains or the deadline passes.' };
   }
   const view = flagView(flag, state);
-  const doc = buildReferralDocument({ ...flag, ...view }, view.signal, trimmed, now);
+  const doc = buildReferralDocument({ ...flag, ...view }, trimmed, now);
   return {
     ...state,
     flags: state.flags.map((f) => (f.id === flagId ? { ...f, state: 'referred', referralId: doc.id } : f)),

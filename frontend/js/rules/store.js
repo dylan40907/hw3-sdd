@@ -1,4 +1,4 @@
-export const STORAGE_KEY = 'fairExam.v1';
+export const STORAGE_KEY = 'fairExam.v2';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));

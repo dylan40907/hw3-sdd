@@ -49,3 +49,39 @@ Found by running V1 in the browser as each role and reading the code against the
 
 No implementation defects were found. Every behavior we checked matches the spec as written. The issues above
 come from what the spec did or did not say.
+
+---
+
+# Version 2
+
+Code paths are under `frontend/`, tests are in `frontend/tests/` and run with `node --test`
+(102 tests, all passing). FR and user story (US) IDs are in `specs/002-fair-exam-prototype-v2/spec.md`;
+goals and requirements are in `docs/goal-model.md` (Version 2). The V1 matrix above is unchanged.
+FR numbers match V1 except autosave (now FR-004) and versions (now FR-003).
+
+## V2 Matrix
+
+| Requirement | FR | Story | Goal | Code / Implementation | Tests | Status |
+|---|---|---|---|---|---|---|
+| REQ-01 Extra time applied | FR-001 | US1 | G-30 | `js/rules/timer.js`, `js/rules/start-page.js` | `timer.test.js` | Unchanged from V1 |
+| REQ-02 One start page | FR-002 | US1 | G-51 | `js/rules/start-page.js`, `js/ui/student-view.js` | `start-page.test.js` | Unchanged from V1 |
+| REQ-03 Own version, recorded | FR-003 | US2 | G-3 | `js/rules/versions.js` | `versions.test.js` | Unchanged from V1 (renumbered) |
+| REQ-04 Answers autosaved | FR-004, FR-022 | US1 | G-39 | `js/rules/versions.js`, `js/rules/store.js` (key `fairExam.v2`) | `store.test.js`, `versions.test.js` | Unchanged from V1 (renumbered, new storage key) |
+| REQ-05 Fullscreen requested | FR-005 | US3 | G-115 | `js/ui/exam-events.js` | `exam-events.test.js` | Unchanged from V1 |
+| REQ-06 Page leave or fullscreen exit | FR-006 | US3 | G-7 | `js/rules/signals.js`, `js/ui/exam-events.js` | `signals.test.js`, `exam-events.test.js` | Unchanged from V1 |
+| REQ-07 Paste recorded | FR-007 | US3 | G-116 | `js/rules/signals.js`, `js/ui/exam-events.js` | `signals.test.js`, `exam-events.test.js` | Unchanged from V1 |
+| REQ-08 Fast answer, not after outage or help | FR-008, FR-021 | US3 | G-117 | `js/rules/signals.js` (`overlapsOffline`, `endLeave`, `recordReload`), `js/rules/timer.js` (`closePause`) | `signals.test.js` | Changed (V1-3); Submit-only rule clarified |
+| REQ-09 Same incorrect answer grouped | FR-009 | US3 | G-10 | `js/rules/grouping.js` (`MIN_GROUP_SIZE` 2) | `grouping.test.js`, `flags.test.js` | Changed to groups of 2 or more; V1-4 stays open (Alan) |
+| REQ-10 Help request with a reason | FR-010, FR-020 | US4 | G-53 | `js/rules/timer.js` (`openPause`, `questionsHidden`), `js/data/mock-data.js` (`helpReasons`), `js/ui/student-view.js` | `timer.test.js`, `signals.test.js` | Changed (V1-2, V1-5); maximum length stays open (Alan) |
+| REQ-11 Pause with reason and length | FR-011 | US4 | G-118 | `js/rules/timer.js` (`pauseLog`), `js/ui/instructor-view.js` | `timer.test.js` | Changed (V1-2) |
+| REQ-12 One flag per student | FR-012 | US5 | G-20 | `js/rules/flags.js`, `js/rules/signals.js` (`addSignal`), `js/ui/instructor-view.js` | `flags.test.js`, `referral.test.js` | Changed (V1-1); "New signals" mark clarified |
+| REQ-13 Review before student sees | FR-013 | US5 | G-111 | `js/rules/flags.js` | `flags.test.js` | Unchanged from V1 |
+| REQ-14 Dismiss, no referral | FR-014 | US5 | G-112 | `js/rules/flags.js` (`dismiss`) | `flags.test.js` | Unchanged from V1; dismissed flag visible to student clarified |
+| REQ-15 Student sees flag after request | FR-015 | US6 | G-65 | `js/rules/flags.js`, `js/ui/student-view.js` | `flags.test.js` | Unchanged from V1 (all signals shown) |
+| REQ-16 Student explains | FR-016 | US6 | G-66 | `js/rules/flags.js`, `js/ui/student-view.js` | `flags.test.js` | Unchanged from V1 |
+| REQ-17 Refer after explanation or deadline | FR-017, FR-023 | US7 | G-25 | `js/rules/referral.js`, `js/ui/instructor-view.js` | `referral.test.js` | Unchanged from V1 |
+| REQ-18 Referral document | FR-018, FR-023 | US7 | G-113 | `js/rules/referral.js` | `referral.test.js` | Changed (lists every signal) |
+| REQ-19 Office reads the document | FR-019 | US7 | G-114 | `js/rules/referral.js`, `js/ui/office-view.js` | `referral.test.js` | Unchanged from V1 (lists every signal) |
+
+V2 not checked yet: the 13 manual scenarios in `specs/002-fair-exam-prototype-v2/quickstart.md` in a
+browser, and success criteria SC-002 and SC-006 (timing), which need a person.

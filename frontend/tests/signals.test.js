@@ -4,7 +4,9 @@ import {
   recordSignal, startLeave, endLeave, submitAnswer, recordReload,
   recordOffline, recordOnline, technicalEvent,
 } from '../js/rules/signals.js';
-import { finishExam } from '../js/rules/timer.js';
+import { finishExam, openPause, closePause } from '../js/rules/timer.js';
+import { flagView } from '../js/rules/flags.js';
+import { saveAnswer } from '../js/rules/versions.js';
 import { stateWith, startedSession, signalsOf } from './state-fixtures.js';
 import { T0, MIN } from './helpers.js';
 
@@ -142,4 +144,64 @@ test('FR-010: a page leave that started during help records nothing after help c
 test('FR-010 FR-021: offline periods are still recorded during help', () => {
   const s1 = recordOffline(withOpenHelp(T0 + MIN).sessions.s1, T0 + 2 * MIN);
   assert.equal(s1.offlinePeriods.length, 1);
+});
+
+function flagOf(state, studentId) {
+  return state.flags.find((f) => f.studentId === studentId);
+}
+
+test('FR-008 FR-021 REQ-08: after a connection loss the page leave is marked and a fast answer is not recorded', () => {
+  let s1 = recordOffline(startedSession(), T0 + MIN);
+  s1 = startLeave(s1, T0 + MIN + 1000);
+  s1 = recordOnline(s1, T0 + 2 * MIN);
+  let state = endLeave(stateWith({ s1 }), 's1', T0 + 2 * MIN + 1000);
+  assert.equal(signalsOf(state, 's1', 'page_leave').length, 1);
+  assert.equal(flagView(flagOf(state, 's1'), state).signals[0].technicalEvent, 'connection lost');
+  assert.equal(state.sessions.s1.lastReturnAt, null);
+  state = submitAnswer(state, 's1', 'q1', T0 + 2 * MIN + 6000);
+  assert.equal(signalsOf(state, 's1', 'fast_answer').length, 0);
+});
+
+test('FR-008 FR-021: no fast answer when the student is still offline at the moment of return', () => {
+  let s1 = recordOffline(startedSession(), T0 + MIN);
+  s1 = startLeave(s1, T0 + MIN + 1000);
+  let state = endLeave(stateWith({ s1 }), 's1', T0 + 2 * MIN);
+  assert.equal(flagView(flagOf(state, 's1'), state).signals[0].technicalEvent, 'connection lost');
+  state = submitAnswer(state, 's1', 'q1', T0 + 2 * MIN + 5000);
+  assert.equal(signalsOf(state, 's1', 'fast_answer').length, 0);
+});
+
+test('FR-008 FR-006: a normal tab switch still records a fast answer (no connection loss)', () => {
+  let state = leaveAndReturn(stateWith({ s1: startedSession() }), T0 + MIN, T0 + 2 * MIN);
+  state = submitAnswer(state, 's1', 'q1', T0 + 2 * MIN + 5000);
+  assert.equal(signalsOf(state, 's1', 'fast_answer').length, 1);
+});
+
+test('FR-008 FR-010 REQ-08: after a help request closes, a fast answer is not recorded', () => {
+  let state = leaveAndReturn(stateWith({ s1: startedSession() }), T0 + MIN, T0 + 2 * MIN);
+  let s1 = openPause(state.sessions.s1, T0 + 2 * MIN + 5000, 'Technical problem');
+  s1 = closePause(s1, T0 + 2 * MIN + 10000);
+  state = submitAnswer({ ...state, sessions: { s1 } }, 's1', 'q1', T0 + 2 * MIN + 15000);
+  assert.equal(signalsOf(state, 's1', 'fast_answer').length, 0);
+});
+
+test('FR-008 FR-004: only Submit can raise the fast-answer signal; saving an answer never does', () => {
+  let state = leaveAndReturn(stateWith({ s1: startedSession() }), T0 + MIN, T0 + 2 * MIN);
+  const saved = saveAnswer(state.sessions.s1, 'q1', '42', T0 + 2 * MIN + 3000);
+  state = { ...state, sessions: { s1: saved } };
+  assert.equal(signalsOf(state, 's1', 'fast_answer').length, 0);
+  state = submitAnswer(state, 's1', 'q1', T0 + 2 * MIN + 5000);
+  assert.equal(signalsOf(state, 's1', 'fast_answer').length, 1);
+});
+
+test('FR-022 FR-021 FR-008: a reload during an offline period records one reload page leave and no fast answer', () => {
+  let s1 = recordOffline(startedSession(), T0 + MIN);
+  s1 = startLeave(s1, T0 + MIN + 1000);
+  let state = recordReload(stateWith({ s1 }), 's1', T0 + 2 * MIN);
+  const leaves = signalsOf(state, 's1', 'page_leave');
+  assert.equal(leaves.length, 1);
+  assert.equal(leaves[0].details.cause, 'reload');
+  assert.equal(state.sessions.s1.lastReturnAt, null);
+  state = submitAnswer(state, 's1', 'q1', T0 + 2 * MIN + 5000);
+  assert.equal(signalsOf(state, 's1', 'fast_answer').length, 0);
 });

@@ -1,6 +1,6 @@
 import { newSession, startPageSummary, confirm, startExam } from '../rules/start-page.js';
 import {
-  remainingMs, endTime, finishExam, openPause, closePause, openPauseOf,
+  remainingMs, endTime, finishExam, openPause, closePause, openPauseOf, questionsHidden,
 } from '../rules/timer.js';
 import { studentFlags, flagView, submitExplanation } from '../rules/flags.js';
 import { saveAnswer, openQuestion } from '../rules/versions.js';
@@ -9,6 +9,27 @@ import {
 } from '../rules/signals.js';
 import { requestFullscreen, attachExamEvents } from './exam-events.js';
 import { escapeHtml, formatClock, formatDateTime, formatRemaining } from './format.js';
+
+// What the student has picked or typed for a help request but not sent yet. It lives outside the
+// rendered HTML so a re-render (for example after a signal) does not clear it (FR-010).
+let helpDraft = { studentId: null, picked: '', typed: '' };
+
+function draftFor(studentId) {
+  if (helpDraft.studentId !== studentId) helpDraft = { studentId, picked: '', typed: '' };
+  return helpDraft;
+}
+
+export function helpFormHtml(helpReasons, draft) {
+  return `
+      <div class="actions help-form">
+        <select data-help-reason aria-label="Reason for help">
+          <option value="">Pick a reason</option>
+          ${helpReasons.map((r) => `<option value="${escapeHtml(r)}"${r === draft.picked ? ' selected' : ''}>${escapeHtml(r)}</option>`).join('')}
+        </select>
+        <input type="text" data-help-text placeholder="or type a reason" aria-label="Type a reason for help" value="${escapeHtml(draft.typed)}">
+        <button class="secondary" data-action="open-help">Request help</button>
+      </div>`;
+}
 
 let detachEvents = null;
 let attachedFor = null;
@@ -119,18 +140,20 @@ function renderExam(el, ctx) {
   const session = sessionOf(state);
   const t = ctx.now();
   const open = openPauseOf(session);
+  const hidden = questionsHidden(session);
   el.innerHTML = `
     <div class="panel">
       <h2>${escapeHtml(exam.title)}</h2>
       <p>Time left: <span class="timer" data-timer>${formatRemaining(remainingMs(session, t))}</span>
         <span class="muted">(ends at <span data-end>${formatClock(endTime(session, t))}</span>)</span></p>
-      ${open ? `
+      ${hidden ? `
       <div class="panel" data-help-panel>
         <h3>Help request open, timer paused</h3>
+        <p>Reason: ${escapeHtml(open.reason)}</p>
         <p>Nothing is detected while the help request is open. Close it to go back to the questions.</p>
         <button data-action="close-help">Close help request</button>
       </div>` : `
-      <div class="actions"><button class="secondary" data-action="open-help">Request help</button></div>
+      ${helpFormHtml(exam.helpReasons, draftFor(state.currentStudentId))}
       <div data-questions>
         ${exam.questions.map((q, i) => {
           const answer = session.answers[q.id];
@@ -148,10 +171,22 @@ function renderExam(el, ctx) {
 
   const helpButton = el.querySelector('[data-action="open-help"]') || el.querySelector('[data-action="close-help"]');
   helpButton.onclick = () => {
-    const toggle = open ? closePause : openPause;
-    ctx.update((st) => withSession(st, (s) => toggle(s, ctx.now())));
+    if (open) {
+      ctx.update((st) => withSession(st, (s) => closePause(s, ctx.now())));
+      return;
+    }
+    // The typed reason is used when there is one; otherwise the picked one (FR-010).
+    const typed = el.querySelector('[data-help-text]').value.trim();
+    const reason = typed || el.querySelector('[data-help-reason]').value;
+    const opened = ctx.update((st) => withSession(st, (s) => openPause(s, ctx.now(), reason)));
+    if (opened) helpDraft = { studentId: state.currentStudentId, picked: '', typed: '' };
   };
-  if (open) return;
+  if (!hidden) {
+    const draft = draftFor(state.currentStudentId);
+    el.querySelector('[data-help-reason]').addEventListener('change', (e) => { draft.picked = e.target.value; });
+    el.querySelector('[data-help-text]').addEventListener('input', (e) => { draft.typed = e.target.value; });
+  }
+  if (hidden) return;
 
   for (const button of el.querySelectorAll('[data-submit]')) {
     button.onclick = () => {
@@ -186,11 +221,14 @@ function renderMyFlags(el, ctx) {
         const canExplain = f.state === 'explanation_requested' && t <= f.deadline;
         return `
         <div class="question ${f.dismissed ? 'dismissed-flag' : ''}">
-          <p><strong class="${f.dismissed ? 'dismissed' : ''}">${escapeHtml(v.what)}</strong>
-            <span class="flag-state ${f.dismissed ? 'dismissed' : ''}">${f.dismissed ? 'Dismissed' : f.state === 'explained' ? 'Explanation sent' : f.state === 'referred' ? 'Referred' : 'Explanation requested'}</span></p>
+          <p><span class="flag-state ${f.dismissed ? 'dismissed' : ''}">${f.dismissed ? 'Dismissed' : f.state === 'explained' ? 'Explanation sent' : f.state === 'referred' ? 'Referred' : 'Explanation requested'}</span></p>
+          ${v.signals.map((i) => `
+          <p><strong class="${f.dismissed ? 'dismissed' : ''}">${escapeHtml(i.what)}</strong></p>
           <dl>
-            <dt>When</dt><dd>${formatDateTime(v.when)}</dd>
-            <dt>Why</dt><dd>${escapeHtml(v.why)}</dd>
+            <dt>When</dt><dd>${formatDateTime(i.when)}</dd>
+            <dt>Why</dt><dd>${escapeHtml(i.why)}</dd>
+          </dl>`).join('')}
+          <dl>
             <dt>Deadline</dt><dd>${formatDateTime(f.deadline)}</dd>
             ${f.explanation ? `<dt>Your explanation</dt><dd>${escapeHtml(f.explanation.text)}</dd>` : ''}
           </dl>

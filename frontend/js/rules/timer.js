@@ -31,18 +31,25 @@ export function finishExam(session, now) {
   return { ...session, endedAt: now };
 }
 
-export const PAUSE_REASON = 'help request';
-
-export function openPause(session, now) {
+// The student must pick or type a reason; it is stored on the pause (FR-010, FR-011).
+export function openPause(session, now, reason) {
   if (openPauseOf(session)) return { ok: false, error: 'A help request is already open.' };
-  const pause = { id: `p${session.pauses.length + 1}`, reason: PAUSE_REASON, from: now, to: null };
+  const trimmed = String(reason ?? '').trim();
+  if (!trimmed) return { ok: false, error: 'Pick or type a reason for the help request.' };
+  const pause = { id: `p${session.pauses.length + 1}`, reason: trimmed, from: now, to: null };
   return { ...session, pauses: [...session.pauses, pause] };
+}
+
+// The questions are hidden while a help request is open (FR-010).
+export function questionsHidden(session) {
+  return Boolean(openPauseOf(session));
 }
 
 export function closePause(session, now) {
   const open = openPauseOf(session);
   if (!open) return { ok: false, error: 'No help request is open.' };
-  return { ...session, pauses: session.pauses.map((p) => (p === open ? { ...p, to: now } : p)) };
+  // Returning from help does not start the 30-second fast-answer window (FR-008).
+  return { ...session, lastReturnAt: null, pauses: session.pauses.map((p) => (p === open ? { ...p, to: now } : p)) };
 }
 
 export function pauseLog(session) {

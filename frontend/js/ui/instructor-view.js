@@ -1,4 +1,4 @@
-import { flagView, keep, dismiss, canRefer, requestExplanation } from '../rules/flags.js';
+import { flagView, keep, dismiss, canRefer, requestExplanation, markFlagSeen } from '../rules/flags.js';
 import { refer } from '../rules/referral.js';
 import { pauseLog } from '../rules/timer.js';
 import { escapeHtml, formatDateTime, formatDuration } from './format.js';
@@ -121,29 +121,36 @@ function updateFlag(state, flagId, fn) {
   return { ...state, flags: state.flags.map((f) => (f.id === flagId ? result : f)) };
 }
 
+function latestSignalTime(view) {
+  return Math.max(...view.signals.map((i) => i.when));
+}
+
 function renderFlagList(body, ctx) {
   const { state } = ctx;
-  const flags = [...state.flags].sort((a, b) => flagView(b, state).when - flagView(a, state).when);
+  const rows = state.flags
+    .map((f) => ({ flag: f, view: flagView(f, state) }))
+    .sort((a, b) => latestSignalTime(b.view) - latestSignalTime(a.view));
   body.innerHTML = `
     <div class="panel">
       <h2>Flags</h2>
-      ${flags.length ? `<table>
-        <thead><tr><th>Student</th><th>What happened</th><th>When</th><th>State</th></tr></thead>
-        <tbody>${flags.map((f) => {
-          const v = flagView(f, state);
-          return `<tr class="clickable" data-flag="${f.id}">
+      ${rows.length ? `<table>
+        <thead><tr><th>Student</th><th>Signals</th><th>Latest signal</th><th>State</th></tr></thead>
+        <tbody>${rows.map(({ flag: f, view: v }) => `<tr class="clickable" data-flag="${f.id}">
             <td>${studentName(state, f.studentId)}</td>
-            <td>${escapeHtml(v.what)}</td>
-            <td>${formatDateTime(v.when)}</td>
-            <td><span class="flag-state ${f.state === 'dismissed' ? 'dismissed' : ''}">${STATE_LABELS[f.state]}</span></td>
-          </tr>`;
-        }).join('')}</tbody>
+            <td>${v.signals.length}</td>
+            <td>${formatDateTime(latestSignalTime(v))}</td>
+            <td><span class="flag-state ${f.state === 'dismissed' ? 'dismissed' : ''}">${STATE_LABELS[f.state]}</span>
+              ${f.hasNewSignals ? '<span class="new-signals">New signals</span>' : ''}</td>
+          </tr>`).join('')}</tbody>
       </table>` : '<p class="muted">No flags yet.</p>'}
     </div>`;
   for (const row of body.querySelectorAll('[data-flag]')) {
     row.onclick = () => {
-      ui.flagId = row.dataset.flag;
-      renderFlagDetail(body, ctx);
+      const id = row.dataset.flag;
+      ui.flagId = id;
+      // Opening a flag clears its "New signals" mark; the update re-renders the detail (FR-012).
+      if (state.flags.find((f) => f.id === id)?.hasNewSignals) ctx.update((st) => markFlagSeen(st, id));
+      else renderFlagDetail(body, ctx);
     };
   }
 }
@@ -154,9 +161,19 @@ function contextList(view) {
   items.push(c.pauses.length
     ? `Pauses: ${c.pauses.map((p) => `${p.reason}, ${p.lengthMs === null ? 'still open' : formatDuration(p.lengthMs)} at ${formatDateTime(p.from)}`).join('; ')}`
     : 'Pauses: none');
-  if (c.technicalEvent) items.push(`Technical event: ${c.technicalEvent}`);
-  if (c.group) items.push(`Same answer (${c.group.value}) as: ${c.group.otherStudents.join(', ')}`);
+  for (const g of c.groups) items.push(`Same answer (${g.value}) as: ${g.otherStudents.join(', ')}`);
   return `<ul>${items.map((i) => `<li>${escapeHtml(i)}</li>`).join('')}</ul>`;
+}
+
+function signalList(view) {
+  return view.signals.map((i) => `
+      <div class="question">
+        <p><strong>${escapeHtml(i.what)}</strong>${i.technicalEvent ? ` <span class="flag-state">${escapeHtml(i.technicalEvent)}</span>` : ''}</p>
+        <dl>
+          <dt>When</dt><dd>${formatDateTime(i.when)}${i.until ? ` to ${formatDateTime(i.until)}` : ''}</dd>
+          <dt>Why</dt><dd>${escapeHtml(i.why)}</dd>
+        </dl>
+      </div>`).join('');
 }
 
 function renderFlagDetail(body, ctx) {
@@ -172,13 +189,10 @@ function renderFlagDetail(body, ctx) {
   body.innerHTML = `
     <div class="panel">
       <button class="secondary" data-action="back">Back to flags</button>
-      <h2>${escapeHtml(view.what)}</h2>
+      <h2>Flag for ${studentName(state, flag.studentId)}</h2>
       <p><span class="flag-state ${flag.state === 'dismissed' ? 'dismissed' : ''}">${STATE_LABELS[flag.state]}</span></p>
-      <dl>
-        <dt>Student</dt><dd>${studentName(state, flag.studentId)}</dd>
-        <dt>When</dt><dd>${formatDateTime(view.when)}${view.until ? ` to ${formatDateTime(view.until)}` : ''}</dd>
-        <dt>Why</dt><dd>${escapeHtml(view.why)}</dd>
-      </dl>
+      <h3>Signals</h3>
+      ${signalList(view)}
       <h3>Context</h3>
       ${contextList(view)}
       ${flag.explanationRequestedAt ? `

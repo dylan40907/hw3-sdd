@@ -13,11 +13,16 @@ function setSession(state, studentId, session) {
   return { ...state, sessions: { ...state.sessions, [studentId]: session } };
 }
 
-// Adds one signal and the one flag it creates (FR-012).
+// Adds one signal. A student has one flag per exam: the first signal creates it, later ones join it (FR-012).
 export function addSignal(state, { studentId, type, at, until = null, details = {} }) {
   const signal = { id: `sig-${state.signals.length + 1}`, studentId, type, at, until, details };
   const withSignal = { ...state, signals: [...state.signals, signal] };
-  return { ...withSignal, flags: [...state.flags, createFlag(signal, withSignal)] };
+  const existing = state.flags.find((f) => f.studentId === studentId);
+  if (!existing) return { ...withSignal, flags: [...state.flags, createFlag(signal, withSignal)] };
+  // A flag the instructor has already moved past `new` is marked, so the new signal is noticed (FR-012).
+  const hasNewSignals = existing.state !== 'new' ? true : existing.hasNewSignals;
+  const flags = state.flags.map((f) => (f === existing ? { ...f, signalIds: [...f.signalIds, signal.id], hasNewSignals } : f));
+  return { ...withSignal, flags };
 }
 
 export function recordOffline(session, now) {
@@ -33,12 +38,15 @@ export function recordOnline(session, now) {
   return { ...session, offlinePeriods: [...periods.slice(0, -1), { ...last, to: now }] };
 }
 
+// True when the time range overlaps a time the device was offline (FR-021).
+function overlapsOffline(session, from, to) {
+  return session.offlinePeriods.some((p) => p.from <= to && (p.to ?? Infinity) >= from);
+}
+
 // "connection lost" when a page leave overlaps a time the device was offline (FR-021).
 export function technicalEvent(signal, session) {
   if (signal.type !== 'page_leave') return null;
-  const end = signal.until ?? signal.at;
-  const overlaps = session.offlinePeriods.some((p) => p.from <= end && (p.to ?? Infinity) >= signal.at);
-  return overlaps ? 'connection lost' : null;
+  return overlapsOffline(session, signal.at, signal.until ?? signal.at) ? 'connection lost' : null;
 }
 
 export function recordSignal(state, studentId, type, details, now) {
@@ -56,11 +64,13 @@ export function endLeave(state, studentId, now) {
   const session = state.sessions[studentId];
   const leave = session?.leave;
   if (!leave || leave.to !== null) return state;
-  const closed = { ...session, leave: { ...leave, to: now } };
+  const connectionLoss = overlapsOffline(session, leave.from, now);
+  const closed = { ...session, leave: { ...leave, to: now, connectionLoss } };
   if (leave.duringPause || openPauseOf(session) || !isRunning(session, now)) {
     return setSession(state, studentId, closed);
   }
-  const next = setSession(state, studentId, { ...closed, lastReturnAt: now });
+  // A return from a connection loss does not start the 30-second fast-answer window (FR-008).
+  const next = setSession(state, studentId, connectionLoss ? closed : { ...closed, lastReturnAt: now });
   return addSignal(next, { studentId, type: 'page_leave', at: leave.from, until: now });
 }
 
@@ -87,8 +97,9 @@ export function recordReload(state, studentId, now) {
   if (!isRunning(session, now)) return state;
   const open = session.leave && session.leave.to === null ? session.leave : null;
   const from = open ? open.from : now;
-  const closed = { ...session, leave: { from, to: now, duringPause: open ? open.duringPause : false } };
+  const connectionLoss = overlapsOffline(session, from, now);
+  const closed = { ...session, leave: { from, to: now, duringPause: open ? open.duringPause : false, connectionLoss } };
   if (open?.duringPause || openPauseOf(session)) return setSession(state, studentId, closed);
-  const next = setSession(state, studentId, { ...closed, lastReturnAt: now });
+  const next = setSession(state, studentId, connectionLoss ? closed : { ...closed, lastReturnAt: now });
   return addSignal(next, { studentId, type: 'page_leave', at: from, until: now, details: { cause: 'reload' } });
 }

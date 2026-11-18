@@ -82,6 +82,15 @@ tr.clickable:hover { background: var(--bg); }
 }
 .dismissed { color: var(--muted); text-decoration: line-through; }
 .flag-state.dismissed { text-decoration: none; }
+.new-signals {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--warn);
+  color: var(--warn);
+  font-size: 0.85rem;
+}
 
 .error { color: var(--warn); margin: 8px 16px; }
 .muted { color: var(--muted); }
@@ -89,3 +98,5 @@ tr.clickable:hover { background: var(--bg); }
 dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; }
 dt { font-weight: 600; }
 dd { margin: 0; }
+
+.help-form select, .help-form input { padding: 6px; font-size: 1rem; }

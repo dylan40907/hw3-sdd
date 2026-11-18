@@ -9,6 +9,7 @@ export const exam = {
     'Stay on the exam page in fullscreen until you finish.',
     'Use Request help if you have a problem. The timer pauses while help is open.',
   ],
+  helpReasons: ['Technical problem', 'I do not understand a question', 'Accessibility need'],
   detected: [
     'leaving the exam page',
     'exiting fullscreen',
@@ -38,7 +39,7 @@ export const exam = {
 };
 
 // s3 and s4 both answer 50 on q2, which is wrong for every q2 version (no a*b equals 50).
-// A live student who also answers 50 completes a group of 3.
+// s3 and s4 form a group of 2; a live student who also answers 50 joins it.
 export const SHARED_INCORRECT_Q2 = 50;
 
 export const students = [
@@ -89,13 +90,13 @@ export const seed = {
   ],
   flags: [
     {
-      id: 'flag-s1', signalId: 'sig-s1', studentId: 's3', state: 'explanation_requested',
+      id: 'flag-s1', signalIds: ['sig-s1'], hasNewSignals: false, studentId: 's3', state: 'explanation_requested',
       createdAt: Date.UTC(2026, 10, 11, 15, 0),
       explanationRequestedAt: requestedAt, deadline: requestedAt + 3 * DAY,
       explanation: null, referralId: null,
     },
     {
-      id: 'flag-s2', signalId: 'sig-s2', studentId: 's4', state: 'explained',
+      id: 'flag-s2', signalIds: ['sig-s2'], hasNewSignals: false, studentId: 's4', state: 'explained',
       createdAt: Date.UTC(2026, 10, 11, 15, 0),
       explanationRequestedAt: requestedAt, deadline: requestedAt + 3 * DAY,
       explanation: {

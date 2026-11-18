@@ -2,7 +2,7 @@ import { correctAnswer } from './versions.js';
 import { isEnded, endTime } from './timer.js';
 import { addSignal } from './signals.js';
 
-export const MIN_GROUP_SIZE = 3;
+export const MIN_GROUP_SIZE = 2;
 
 // answersByStudent: { studentId: { questionId: { params, value } } }
 export function findGroups(exam, answersByStudent) {

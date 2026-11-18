@@ -18,10 +18,11 @@ function seconds(ms) {
 export function createFlag(signal, state) {
   return {
     id: `flag-${state.flags.length + 1}`,
-    signalId: signal.id,
+    signalIds: [signal.id],
     studentId: signal.studentId,
     state: 'new',
     createdAt: signal.at,
+    hasNewSignals: false,
     explanationRequestedAt: null,
     deadline: null,
     explanation: null,
@@ -68,32 +69,46 @@ function describe(signal, group) {
 }
 
 export function flagView(flag, state) {
-  const signal = state.signals.find((s) => s.id === flag.signalId);
   const student = state.students.find((s) => s.id === flag.studentId);
   const session = state.sessions[flag.studentId];
-  const group = signal.details?.groupId ? state.groups.find((g) => g.id === signal.details.groupId) : null;
-  const { what, why } = describe(signal, group);
+  const groups = [];
+  const signals = flag.signalIds.map((id) => {
+    const signal = state.signals.find((s) => s.id === id);
+    const group = signal.details?.groupId ? state.groups.find((g) => g.id === signal.details.groupId) : null;
+    const { what, why } = describe(signal, group);
+    if (group) {
+      groups.push({
+        questionId: group.questionId,
+        value: group.value,
+        otherStudents: group.studentIds
+          .filter((sid) => sid !== flag.studentId)
+          .map((sid) => state.students.find((s) => s.id === sid)?.name ?? sid),
+      });
+    }
+    return {
+      signal,
+      what,
+      when: signal.at,
+      until: signal.until,
+      why,
+      technicalEvent: session ? technicalEvent(signal, session) : null,
+    };
+  });
   return {
-    what,
-    when: signal.at,
-    until: signal.until,
-    why,
-    signal,
+    signals,
     context: {
       extraTimePct: student?.extraTimePct ?? 0,
       pauses: session ? pauseLog(session) : [],
-      technicalEvent: session ? technicalEvent(signal, session) : null,
-      group: group
-        ? {
-          questionId: group.questionId,
-          value: group.value,
-          otherStudents: group.studentIds
-            .filter((id) => id !== flag.studentId)
-            .map((id) => state.students.find((s) => s.id === id)?.name ?? id),
-        }
-        : null,
+      groups,
     },
   };
+}
+
+// Opening a flag as the instructor clears its "has new signals" mark (FR-012).
+export function markFlagSeen(state, flagId) {
+  const flag = state.flags.find((f) => f.id === flagId);
+  if (!flag || !flag.hasNewSignals) return state;
+  return { ...state, flags: state.flags.map((f) => (f.id === flagId ? { ...f, hasNewSignals: false } : f)) };
 }
 
 export function keep(flag) {

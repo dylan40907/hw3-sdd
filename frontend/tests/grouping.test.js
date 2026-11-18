@@ -35,10 +35,20 @@ test('FR-009 REQ-09: three students with the same incorrect answer form one grou
   assert.deepEqual(groups[0].studentIds, ['x', 'y', 'z']);
 });
 
-test('FR-009: two students with the same incorrect answer are not grouped', () => {
+test('FR-009 REQ-09: two students with the same incorrect answer form a group', () => {
   const groups = findGroups(exam, answers({
     x: { params: { a: 6, b: 7 }, value: 50 },
     y: { params: { a: 9, b: 4 }, value: 50 },
+  }));
+  assert.equal(groups.length, 1);
+  assert.deepEqual(groups[0].studentIds, ['x', 'y']);
+});
+
+test('FR-009: a student with an incorrect answer nobody else gave is in no group', () => {
+  const groups = findGroups(exam, answers({
+    x: { params: { a: 6, b: 7 }, value: 50 },
+    y: { params: { a: 9, b: 4 }, value: 51 },
+    z: { params: { a: 8, b: 5 }, value: 52 },
   }));
   assert.equal(groups.length, 0);
 });
@@ -49,7 +59,8 @@ test('FR-009: a student whose answer is correct for their own version is not in 
     y: { params: { a: 9, b: 4 }, value: 48 },
     z: { params: { a: 6, b: 8 }, value: 48 }, // 6 * 8 = 48 is correct for z
   }));
-  assert.equal(groups.length, 0);
+  assert.equal(groups.length, 1);
+  assert.deepEqual(groups[0].studentIds, ['x', 'y']);
 });
 
 test('FR-009: applyGroups gives every student in the group one signal, including pre-filled students', () => {
@@ -70,6 +81,13 @@ test('FR-009: Finish exam then processExamEnd groups the live student with the t
   assert.deepEqual(state.groups[0].studentIds, ['s1', 's3', 's4']);
   for (const id of ['s1', 's3', 's4']) assert.equal(signalsOf(state, id, 'same_incorrect_answer').length, 1);
   assert.equal(signalsOf(state, 's5', 'same_incorrect_answer').length, 0);
+});
+
+test('FR-009: the two pre-filled students form a group even when the live student answers differently', () => {
+  const s1 = finishExam(liveSessionAnswering('s1', 51), T0 + 5 * MIN);
+  const state = processExamEnd(stateWith({ s1 }), exam, students, T0 + 5 * MIN);
+  assert.deepEqual(state.groups[0].studentIds, ['s3', 's4']);
+  assert.equal(signalsOf(state, 's1', 'same_incorrect_answer').length, 0);
 });
 
 test('FR-009: the exam ends at the end time even with no student action', () => {
@@ -105,7 +123,7 @@ test('FR-009: a second live student with the same answer grows the group and get
   assert.equal(signalsOf(state, 's2', 'same_incorrect_answer').length, 1);
 });
 
-test('FR-004 FR-009: the live student is graded against their own recorded version', () => {
+test('FR-003 FR-009: the live student is graded against their own recorded version', () => {
   const params = versionFor('s1', q2);
   const correct = String(params.a * params.b);
   const s1 = finishExam(liveSessionAnswering('s1', correct), T0 + 5 * MIN);
