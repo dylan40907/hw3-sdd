@@ -56,5 +56,5 @@ they keep their data under different browser storage keys, so both can be opened
 
 | Member | Contributions |
 |---|---|
-| Dylan Huang | TBD |
-| Ashley Qian | TBD |
+| Dylan Huang | Set up the repo and Spec Kit. Updated the goal model file and wrote the scope justification and initial spec. Ran Spec Kit for V1, deployed it and evaluated it. Built the traceability matrix. Wrote learning log section 2 and his reflection answers. |
+| Ashley Qian | Merged the two goal models and wrote the sprint requirements, overlaps and conflicts. Updated the goal model and spec for V2 from the V1 findings, ran Spec Kit for V2 and deployed it. Added the V2 traceability. Wrote learning log sections 1 and 3 and her reflection answers. |
