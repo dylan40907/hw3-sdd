@@ -12,11 +12,11 @@ The goal model made these relationships easy to recognize because related requir
 
 ## 2. Prototype Evaluation
 
-I evaluated V1 by using it as the student, the instructor, and the integrity office and by reading the code against the spec. The results are in the traceability matrix in [docs/traceability.md](traceability.md). All 76 tests passed but that only shows the code does what the spec says. It doesn't show the spec is what the stakeholders needed so walking through the app mattered more than the tests.
+We evaluated V1 by using it as the student, the instructor, and the integrity office and by reading the code against the spec. The results are in the traceability matrix in [docs/traceability.md](traceability.md). All 76 tests passed but that only shows the code does what the spec says. It doesn't show the spec is what the stakeholders needed so walking through the app mattered more than the tests.
 
-Before implementing I ran Spec Kit's analyze step. It ended up finding two problems in the plan. One was that the pre-filled students in an answer group would never get a flag and the other was that groups would never be made if a student closed the tab before the end time. We fixed both before building because otherwise V1 would have had real implementation defects.
+Before implementing we ran Spec Kit's analyze step. It ended up finding two problems in the plan. One was that the pre-filled students in an answer group would never get a flag and the other was that groups would never be made if a student closed the tab before the end time. We fixed both before building because otherwise V1 would have had real implementation defects.
 
-I found five issues. All five are requirements issues and I found no implementation defects. I've listed them below:
+We found five issues. All five are requirements issues and we found no implementation defects. We've listed them below:
 
 **V1-1: one action makes several flags.** If a student left the page and then submitted an answer the instructor got two flags. If the answer was in a group they then got a third one. Each one had to be reviewed and asked about and referred separately. This is exactly what REQ-12 said ("every recorded signal becomes a flag") so it's a requirements issue. It shows we wrote the requirement around what the system detects and not around how Alan works. Alan wants less review work (G-11) and Okoye wants one case record per student (D-Okoye L53). The spec needed to change to one flag per student per exam that collects all their signals.
 
