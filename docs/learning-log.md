@@ -34,6 +34,15 @@ Overall the agent built what we wrote but sometimes too literally. The problems 
 
 ### Reflection
 
+Change 1: One flag per student per exam, V1-1
+
+In V1, every recorded signal became its own flag, as REQ-12 stated. During evaluation, we found that one action could create multiple flags, and Alan had to review, ask about and refer each one separately. This approach goes against G-11, which is reducing review work, and against Okoye’s need for one case record per student. We changed REQ-12 so that each student gets one flag per exam that collects all their signals, and the instructor interface now shows one case document per student. This better addresses G-11, because Alan can review each student in one place and handle the case once, and it also gives Okoye the single case record that was needed.
+
+Change 2: Requiring a reason for help requests, V1-2
+
+In V1, a student could open a help request without giving a reason, and nobody actually received the request. We changed the spec so that the student must pick or type a reason before pausing, and updated the prototype to follow this rule. This better addresses Alan’s need to understand why each pause happened, since every help request now has a reason he can review. However, the change also introduced a new problem. Because students now have to fill in a reason before the pause begins, a student who is already dealing with a problem has to spend extra effort before getting help, which affects fairness. This means the change resolves the traceability issue but shifts part of the cost onto students who genuinely need help, which still needs further input from Alan.
+
+
 **Which decisions required your judgment rather than relying solely on AI?**
 
 Dylan: The agent asked questions during clarify and I answered them on my own. For example it asked if students with the same wrong answer get one shared flag or one flag each. That decision would decide who the instructor contacts so it needed me because I actually read the interviews. I also had to decide which findings were implementation defects and which were requirements issues. The agent told me the code matched the spec but not that the spec was wrong for Alan. V1-5 is the clearest case of this here. The agent added behavior on its own and I had to notice we never actually decided on that.
